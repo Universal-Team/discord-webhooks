@@ -39,11 +39,6 @@ WEBHOOK_DATA='{
   "avatar_url": "https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/github-logo.png",
   "embeds": [
     {
-      "author": {
-        "name": "'$AUTHOR_NAME'",
-        "url": "https://github.com/'$AUTHOR_NAME'",
-        "icon_url": "https://github.com/'$AUTHOR_NAME'.png"
-      },
       "color": '$EMBED_COLOR',
       "title": "['$REPO':'$REF'] '${GITHUB_SHA:0:7}' build '"$STATUS_MESSAGE"'",
       "url": "https://github.com/'$GITHUB_REPOSITORY'/commit/'$GITHUB_SHA'",
