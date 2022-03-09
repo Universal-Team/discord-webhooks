@@ -13,105 +13,46 @@ fi
 
 echo -e "[Webhook]: Sending webhook to Discord...\\n";
 
+REPO=$(cut -d/ -f2 <<< $GITHUB_REPOSITORY)
+REF=$(cut -d/ -f3 <<< $GITHUB_REF)
+
 case $1 in
   "success" )
     EMBED_COLOR=3066993
-    STATUS_MESSAGE="Passed"
-    AVATAR="https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/github-logo.png"
+    STATUS_MESSAGE="succeded"
     ;;
 
   "failure" )
     EMBED_COLOR=15158332
-    STATUS_MESSAGE="Failed"
-    AVATAR="https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/github-logo.png"
+    STATUS_MESSAGE="failed"
     ;;
 
   * )
     EMBED_COLOR=0
-    STATUS_MESSAGE="Status Unknown"
-    AVATAR="https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/github-logo.png"
+    STATUS_MESSAGE="status unknown"
     ;;
 esac
 
-if [ "$AUTHOR_NAME" == "$COMMITTER_NAME" ]; then
-  CREDITS="$AUTHOR_NAME authored & committed"
-else
-  CREDITS="$AUTHOR_NAME authored & $COMMITTER_NAME committed"
-fi
-
-TIMESTAMP=$(date --utc +%FT%TZ)
-if [ $IMAGE = "" ]; then
-  WEBHOOK_DATA='{
-    "username": "Github Actions",
-    "avatar_url": "'$AVATAR'",
-    "embeds": [ {
-      "color": '$EMBED_COLOR',
+WEBHOOK_DATA='{
+  "username": "GitHub Actions",
+  "avatar_url": "https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/github-logo.png",
+  "embeds": [
+    {
       "author": {
-        "name": "Build '"v$CURRENT_DATE"' '"$STATUS_MESSAGE"' - '"$GITHUB_REPOSITORY"'",
-        "url": "'"https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'",
-        "icon_url": "'$AVATAR'"
+        "name": "'$AUTHOR_NAME'",
+        "url": "https://github.com/'$AUTHOR_NAME'",
+        "icon_url": "https://github.com/'$AUTHOR_NAME'.png"
       },
-      "title": "'"$COMMIT_SUBJECT"'",
-      "url": "'"$URL"'",
-      "description": "'"${COMMIT_MESSAGE//$'\n'/ }"\\n\\n"$CREDITS"'",
-      "fields": [
-        {
-          "name": "Commit",
-          "value": "'"[\`${GITHUB_SHA:0:7}\`](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)"'",
-          "inline": true
-        },
-        {
-          "name": "Branch",
-          "value": "'"[\`$GITHUB_REF\`](https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF)"'",
-          "inline": true
-        },
-        {
-          "name": "Release",
-          "value": "'"[\`v$CURRENT_DATE\`](https://github.com/Universal-Team/extras/releases/tag/v$CURRENT_DATE)"'",
-          "inline": true
-        }
-      ],
-      "timestamp": "'"$TIMESTAMP"'"
-    } ]
-  }'
-else
-  WEBHOOK_DATA='{
-    "username": "Github Actions",
-    "avatar_url": "'$AVATAR'",
-    "embeds": [ {
       "color": '$EMBED_COLOR',
-      "author": {
-        "name": "Build '"v$CURRENT_DATE"' '"$STATUS_MESSAGE"' - '"$GITHUB_REPOSITORY"'",
-        "url": "'"https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'",
-        "icon_url": "'$AVATAR'"
-      },
-      "title": "'"$COMMIT_SUBJECT"'",
-      "url": "'"$URL"'",
-      "description": "'"${COMMIT_MESSAGE//$'\n'/ }"\\n\\n"$CREDITS"'",
-      "fields": [
-        {
-          "name": "Commit",
-          "value": "'"[\`${GITHUB_SHA:0:7}\`](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)"'",
-          "inline": true
-        },
-        {
-          "name": "Branch",
-          "value": "'"[\`$GITHUB_REF\`](https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF)"'",
-          "inline": true
-        },
-        {
-          "name": "Release",
-          "value": "'"[\`v$CURRENT_DATE\`](https://github.com/Universal-Team/extras/releases/tag/v$CURRENT_DATE)"'",
-          "inline": false
-        }
-      ],
+      "title": "['$REPO':'$REF'] '${GITHUB_SHA:0:7}' build '"$STATUS_MESSAGE"'",
+      "url": "https://github.com/'$GITHUB_REPOSITORY'/commit/'$GITHUB_SHA'",
+      "description": "[`v'$CURRENT_DATE'`](https://github.com/Universal-Team/extras/releases/tag/v'$CURRENT_DATE') '$COMMIT_SUBJECT' - '$AUTHOR_NAME'",
       "image": {
         "url": "'"$IMAGE"'"
-      },
-      "timestamp": "'"$TIMESTAMP"'"
-    } ]
-  }'
-fi
+      }
+    }
+  ]
+}'
 
 (curl --fail --progress-bar -A "Github-Actions-Webhook" -H Content-Type:application/json -H X-Author:k3rn31p4nic#8383 -d "$WEBHOOK_DATA" "$2" \
   && echo -e "\\n[Webhook]: Successfully sent the webhook.") || echo -e "\\n[Webhook]: Unable to send webhook."
