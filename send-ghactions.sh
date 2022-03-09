@@ -20,6 +20,7 @@ case $1 in
   "success" )
     EMBED_COLOR=3066993
     STATUS_MESSAGE="succeded"
+    DESCRIPTION="[\`v$CURRENT_DATE\`](https://github.com/Universal-Team/extras/releases/tag/v$CURRENT_DATE) $COMMIT_SUBJECT - $AUTHOR_NAME"
     ;;
 
   "failure" )
@@ -46,9 +47,9 @@ WEBHOOK_DATA='{
       "color": '$EMBED_COLOR',
       "title": "['$REPO':'$REF'] '${GITHUB_SHA:0:7}' build '"$STATUS_MESSAGE"'",
       "url": "https://github.com/'$GITHUB_REPOSITORY'/commit/'$GITHUB_SHA'",
-      "description": "[`v'$CURRENT_DATE'`](https://github.com/Universal-Team/extras/releases/tag/v'$CURRENT_DATE') '$COMMIT_SUBJECT' - '$AUTHOR_NAME'",
+      "description": "'"$DESCRIPTION"'",
       "image": {
-        "url": "'"$IMAGE"'"
+        "url": "'$IMAGE'"
       }
     }
   ]
