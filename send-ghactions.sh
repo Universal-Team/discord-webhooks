@@ -20,7 +20,7 @@ case $1 in
   "success" )
     EMBED_COLOR=3066993
     STATUS_MESSAGE="succeded"
-    DESCRIPTION="[\`v$CURRENT_DATE\`](https://github.com/Universal-Team/extras/releases/tag/v$CURRENT_DATE) $COMMIT_SUBJECT - $AUTHOR_NAME"
+    DESCRIPTION="[\`$COMMIT_HASH\`](https://github.com/$REPO/releases/tag/git) $COMMIT_SUBJECT - $AUTHOR_NAME"
     ;;
 
   "failure" )
